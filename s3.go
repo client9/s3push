@@ -97,7 +97,7 @@ func DumpUploadInput(obj *s3manager.UploadInput) string {
 	lines := strings.Split(str, "\n")
 	newlines := []string{}
 	for _, line := range lines {
-		if ! strings.Contains(line, "null")  {
+		if !strings.Contains(line, "null") {
 			newlines = append(newlines, line)
 		}
 	}

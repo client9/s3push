@@ -32,7 +32,7 @@ func Parse(root Dispatcher, conf string) error {
 	for num, s := range lines {
 		parts, err := shlex.Split(s)
 		if err != nil {
-			return fmt.Errorf("Line %d: Unable to parse line: ", num+1, err)
+			return fmt.Errorf("Line %d: Unable to parse line: %s", num+1, err)
 		}
 		if len(parts) == 0 {
 			continue
@@ -48,7 +48,7 @@ func Parse(root Dispatcher, conf string) error {
 		}
 		if len(parts) == 1 && parts[0] == "}" {
 			if len(stack) == 0 {
-				return fmt.Errorf("Line %d: fell off edge")
+				return fmt.Errorf("Line %d: fell off edge", num+1)
 			}
 			stack = stack[:len(stack)-1]
 			continue

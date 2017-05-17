@@ -2,32 +2,18 @@ package httpmime
 
 import "strings"
 
-// https://golang.org/src/mime/type.go
-func TypeByExtension(ext string) string {
-	// Case-sensitive lookup.
-	if v := mimeTypes[ext]; v != "" {
-		return v
-	}
+var typeFiles = []string{
+	"/etc/mime.types",
+	"/etc/apache2/mime.types",
+	"/etc/apache/mime.types",
+}
 
-	// Case-insensitive lookup.
-	// Optimistically assume a short ASCII extension and be
-	// allocation-free in that case.
-	var buf [10]byte
-	lower := buf[:0]
-	const utf8RuneSelf = 0x80 // from utf8 package, but not importing it.
-	for i := 0; i < len(ext); i++ {
-		c := ext[i]
-		if c >= utf8RuneSelf {
-			// Slow path.
-			return mimeTypes[strings.ToLower(ext)]
-		}
-		if 'A' <= c && c <= 'Z' {
-			lower = append(lower, c+('a'-'A'))
-		} else {
-			lower = append(lower, c)
+func MimeTypeFiles() []string {
+	out := []string{}
+	for _, fname := range typeFiles {
+		if _, err := os.Stat(fname); err == nil {
+			out = append(out, fname)
 		}
 	}
-	// The conversion from []byte to string doesn't allocate in
-	// a map lookup.
-	return mimeTypes[string(lower)]
+	return out
 }

@@ -155,7 +155,7 @@ func (c *Filter) setInclude(truth bool, args []string) error {
 
 func (c *Filter) setMap(args []string) error {
 	if len(args) != 2 {
-		return fmt.Errorf("%d expected 1 arg, got %d", args[0], len(args)-1)
+		return fmt.Errorf("%s expected 1 arg, got %d", args[0], len(args)-1)
 	}
 	c.Conf[args[0]] = args[1]
 	return nil
