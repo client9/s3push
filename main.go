@@ -6,6 +6,9 @@ import (
 	"path"
 )
 
+// over-ridden via goreleaser
+var version = "master"
+
 func main() {
 	confName := ".s3push.sh"
 	s3conf, err := ReadConf(confName)

@@ -1,0 +1,15 @@
+# goreleaser.yml
+# Build customization
+build:
+  binary: s3push
+  goos:
+    - linux
+  goarch:
+    - amd64
+  env:
+   - CGO_ENABLED=0
+
+  replacements:
+    amd64: 64-bit
+    386: 32-bit
+    darwin: macOS
