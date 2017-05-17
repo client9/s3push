@@ -101,5 +101,5 @@ func DumpUploadInput(obj *s3manager.UploadInput) string {
 			newlines = append(newlines, line)
 		}
 	}
-	return strings.Join(newlines, "\n)
+	return strings.Join(newlines, "\n")
 }
