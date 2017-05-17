@@ -1,11 +1,10 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
-
-	"gopkg.in/yaml.v2"
+	"strings"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -13,31 +12,14 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 )
 
-type Matcher interface {
-	Match(string) bool
-	True() bool
-	MarshalJSON() ([]byte, error)
-}
-
-type MatchAll struct{}
-
-func (m MatchAll) Match(file string) bool {
-	return true
-}
-func (m MatchAll) True() bool { return true }
-
-func (m MatchAll) MarshalJSON() ([]byte, error) {
-	return []byte(fmt.Sprintf("%q", "match-all")), nil
-}
-
 type Filter struct {
 	Matchers []Matcher
 	Conf     MapAny
 }
 
-func (f *Filter) DefaultAll() {
-	if len(f.Matchers) == 0 {
-		f.Matchers = []Matcher{MatchAll{}}
+func NewFilter() *Filter {
+	return &Filter{
+		Conf: make(MapAny),
 	}
 }
 func (f *Filter) Match(file string) bool {
@@ -62,60 +44,15 @@ func (f *Filter) Match(file string) bool {
 	return use
 }
 
-type XFilter struct {
-	FilterRaw MapAny `yaml:"filter"`
-	Conf      MapAny `yaml:"conf"`
-}
-
-func (x *XFilter) Convert() (*Filter, error) {
-	var matchers []Matcher
-
-	for k, v := range x.FilterRaw {
-		switch k {
-		case "include":
-			args, err := getStrings(v)
-			if err != nil {
-				return nil, fmt.Errorf("Filter %s: %s", k, err)
-			}
-			m, err := NewGlobMatch(args, true)
-			if err != nil {
-				return nil, fmt.Errorf("Filter %s: %s", k, err)
-			}
-			matchers = append(matchers, m)
-			delete(x.FilterRaw, k)
-		case "exclude":
-			args, err := getStrings(v)
-			if err != nil {
-				return nil, fmt.Errorf("Filter %s: %s", k, err)
-			}
-			m, err := NewGlobMatch(args, false)
-			if err != nil {
-				return nil, fmt.Errorf("Filter %s: %s", k, err)
-			}
-			matchers = append(matchers, m)
-			delete(x.FilterRaw, k)
-		default:
-			return nil, fmt.Errorf("Unknown filter name: %q", k)
-		}
-	}
-	// if len(x.FilterRaw) != 0
-	// then these lefts are unknown
-
-	return &Filter{
-		Matchers: matchers,
-		Conf:     x.Conf,
-	}, nil
-}
-
 type S3PushConfig struct {
 	s3srv      *s3.S3
 	s3uploader *s3manager.Uploader
 
-	Base   string `yaml:"base"`
-	Bucket string `yaml:"bucket"`
-	Region string `yaml:"region"`
+	Base   string
+	Bucket string
+	Region string
 
-	Conf []Filter
+	Upload []*Filter
 }
 
 func (s *S3PushConfig) InitS3() error {
@@ -141,10 +78,9 @@ func (s *S3PushConfig) InitS3() error {
 
 	return nil
 }
-
 func (s *S3PushConfig) Match(file string) MapAny {
 	var a MapAny
-	for _, m := range s.Conf {
+	for _, m := range s.Upload {
 		if m.Match(file) {
 			a = Merge(a, m.Conf)
 		}
@@ -152,60 +88,84 @@ func (s *S3PushConfig) Match(file string) MapAny {
 	return a
 }
 
-type XPush struct {
-	Base   string    `yaml:"base"`
-	Bucket string    `yaml:"bucket"`
-	Region string    `yaml:"region"`
-	Select []XFilter `yaml:"select"`
+func (c *S3PushConfig) ConfCall(args []string) error {
+	switch args[0] {
+	case "base":
+		return RequireString1(args, c.setBase)
+	case "bucket":
+		return RequireString1(args, c.setBucket)
+	case "region":
+		return RequireString1(args, c.setRegion)
+	}
+	return fmt.Errorf("unknown command %s", args[0])
 }
 
-func (x *XPush) Convert() (*S3PushConfig, error) {
-	s := make([]Filter, len(x.Select))
-	for i, v := range x.Select {
-		f, err := v.Convert()
-		if err != nil {
-			return nil, err
-		}
-		s[i] = *f
+func (c *S3PushConfig) ConfObject(args []string) (Dispatcher, error) {
+	switch args[0] {
+	case "upload":
+		f := NewFilter()
+		c.Upload = append(c.Upload, f)
+		return f, nil
 	}
-
-	return &S3PushConfig{
-		Base:   x.Base,
-		Bucket: x.Bucket,
-		Region: x.Region,
-		Conf:   s,
-	}, nil
+	return nil, fmt.Errorf("Unknown object %s", args[0])
 }
 
-func ReadConf(config string) (*S3PushConfig, error) {
-	var obj XPush
-	raw := []byte(config)
-	if err := yaml.Unmarshal(raw, &obj); err != nil {
-		return nil, fmt.Errorf("Unable to read: %s", err)
+func (c *S3PushConfig) setBase(arg string) error {
+	c.Base = arg
+	return nil
+}
+func (c *S3PushConfig) setBucket(arg string) error {
+	c.Bucket = arg
+	return nil
+}
+
+func (c *S3PushConfig) setRegion(arg string) error {
+	c.Region = arg
+	return nil
+}
+
+func (c *Filter) ConfCall(args []string) error {
+	cmd := strings.ToLower(args[0])
+	cmd = strings.Replace(cmd, "-", "", -1)
+	cmd = strings.Replace(cmd, "_", "", -1)
+	switch cmd {
+	case "include":
+		return c.setInclude(true, args)
+	case "exclude":
+		return c.setInclude(false, args)
+	case "bucket", "cachecontrol", "contentdisposition", "contentencoding", "contentlanguage", "contenttype", "storageclass", "websiteredirectlocation":
+		args[0] = cmd
+		return c.setMap(args)
 	}
-	newobj, err := obj.Convert()
+	return fmt.Errorf("Filter unknown command %s %s", args[0], cmd)
+}
+
+func (c *Filter) ConfObject(args []string) (Dispatcher, error) {
+	return nil, fmt.Errorf("No sub-objects")
+}
+
+func (c *Filter) setInclude(truth bool, args []string) error {
+	matcher, err := NewGlobMatch(args, truth)
 	if err != nil {
-		return nil, fmt.Errorf("Unable to convert: %s", err)
+		return err
 	}
-	if false {
-		out, err := json.MarshalIndent(&newobj, "", "  ")
-		if err != nil {
-			log.Fatalf("Marshal fail: %s", err)
-		}
-		fmt.Println(string(out))
-	}
-
-	return newobj, nil
+	c.Matchers = append(c.Matchers, matcher)
+	return nil
 }
 
-/*
-	conf := newobj.Match("foobar.xgif")
-	if conf == nil {
-		log.Fatalf("Didn't find anything")
+func (c *Filter) setMap(args []string) error {
+	if len(args) != 2 {
+		return fmt.Errorf("%d expected 1 arg, got %d", args[0], len(args)-1)
 	}
-	out, err = json.MarshalIndent(&conf, "", "  ")
+	c.Conf[args[0]] = args[1]
+	return nil
+}
+func ReadConf(filename string) (*S3PushConfig, error) {
+	rawconf, err := ioutil.ReadFile(filename)
 	if err != nil {
-		log.Fatalf("Marshal fail: %s", err)
+		return nil, err
 	}
-	fmt.Println(string(out))
-*/
+	root := new(S3PushConfig)
+	err = Parse(root, string(rawconf))
+	return root, err
+}

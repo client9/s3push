@@ -38,6 +38,7 @@ func setContentType(s *s3manager.UploadInput, str string) error {
 }
 func setStorageClass(s *s3manager.UploadInput, str string) error {
 	str = strings.ToUpper(str)
+	str = strings.Replace(str, "-", "_", -1)
 	switch str {
 	case s3.ObjectStorageClassStandard:
 		s.StorageClass = nil
@@ -64,6 +65,9 @@ var configMap = map[string]s3Setter{
 	"websiteredirectlocation": setWebsiteRedirectLocation,
 }
 
+// NewUploadInput creates an s3manager.UploadInput or error
+// Entries that are used from MapAny are deleted
+// (so unhandled keys in input remain)
 func NewUploadInput(a MapAny) (*s3manager.UploadInput, error) {
 	upload := &s3manager.UploadInput{}
 	for k, v := range a {
@@ -74,7 +78,7 @@ func NewUploadInput(a MapAny) (*s3manager.UploadInput, error) {
 		if !ok {
 			return nil, fmt.Errorf("Unknown s3 config %q", k)
 		}
-
+		delete(a, k)
 		str, ok := v.(string)
 		if ok && str != "" {
 			err := fn(upload, str)
@@ -86,7 +90,16 @@ func NewUploadInput(a MapAny) (*s3manager.UploadInput, error) {
 	return upload, nil
 }
 
+// DumpUploadInput is a crap debug function
 func DumpUploadInput(obj *s3manager.UploadInput) string {
 	out, _ := json.MarshalIndent(obj, "", "  ")
-	return string(out)
+	str := string(out)
+	lines := strings.Split(str, "\n")
+	newlines := []string{}
+	for _, line := range lines {
+		if ! strings.Contains(line, "null")  {
+			newlines = append(newlines, line)
+		}
+	}
+	return strings.Join(newlines, "\n)
 }

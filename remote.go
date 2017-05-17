@@ -3,15 +3,15 @@ package main
 import (
 	"fmt"
 	"log"
-	"path"
+	"mime"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 	"sync"
 	"time"
-	"mime"
 
-//	"github.com/client9/s3push/httpmime"
+	//	"github.com/client9/s3push/httpmime"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/s3"
@@ -40,7 +40,7 @@ func loadLocalFiles(basePath string) ([]FileStat, error) {
 		return nil, err
 	}
 
-	if !stat.IsDir() {	
+	if !stat.IsDir() {
 		sum, err := MD5File(absPath)
 		if err != nil {
 			return nil, err
@@ -52,7 +52,7 @@ func loadLocalFiles(basePath string) ([]FileStat, error) {
 			LastModified: stat.ModTime(),
 			Size:         stat.Size(),
 			ETag:         sum,
-			Mime:  mime.TypeByExtension(path.Ext(name)),
+			Mime:         mime.TypeByExtension(path.Ext(name)),
 		})
 		return out, nil
 	}
@@ -73,16 +73,16 @@ func loadLocalFiles(basePath string) ([]FileStat, error) {
 			return err
 		}
 		sum, err := MD5File(absPath)
-                if err != nil {
-                        return err
-                }
+		if err != nil {
+			return err
+		}
 		out = append(out, FileStat{
 			Name:         relativePath,
 			Path:         absPath,
 			LastModified: stat.ModTime(),
 			Size:         stat.Size(),
 			ETag:         sum,
-			Mime:  mime.TypeByExtension(path.Ext(relativePath)),
+			Mime:         mime.TypeByExtension(path.Ext(relativePath)),
 		})
 		return nil
 	})
@@ -105,7 +105,7 @@ func listS3Files(svc *s3.S3, bucket, bucketPrefix string) ([]FileStat, error) {
 		Prefix: awsBucketPrefix,
 	}
 	count := 0
-	for true {
+	for {
 		count++
 		conf.ContinuationToken = token
 		list, err := svc.ListObjectsV2(conf)
@@ -146,14 +146,14 @@ func files(conf *S3PushConfig) ([]FileStat, []FileStat, error) {
 		defer wg.Done()
 		t0 := time.Now()
 		remoteFiles, remoteErr = listS3Files(conf.s3srv, conf.Bucket, bucketPrefix)
-		log.Printf("Remote Check: %s", time.Now().Sub(t0))
+		log.Printf("Remote Check: %s", time.Since(t0))
 	}()
 	wg.Add(1)
 	go func() {
 		defer wg.Done()
-		t0:= time.Now()
+		t0 := time.Now()
 		localFiles, localErr = loadLocalFiles(base)
-		log.Printf("Local Check: %s", time.Now().Sub(t0))
+		log.Printf("Local Check: %s", time.Since(t0))
 	}()
 	wg.Wait()
 

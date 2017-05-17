@@ -13,6 +13,7 @@ func MD5Reader(f io.Reader) (string, error) {
 		return "", err
 	}
 
+	// note the embedded quotes
 	return fmt.Sprintf("\"%x\"", h.Sum(nil)), nil
 }
 

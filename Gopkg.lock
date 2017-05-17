@@ -1,0 +1,31 @@
+memo = "7c8079eeecd343b5265e3fc0faf0e1a0ccd700189abd6b3a3ce2b5f8f0d5f12a"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/aws/aws-sdk-go"
+  packages = ["aws","aws/awserr","aws/awsutil","aws/client","aws/client/metadata","aws/corehandlers","aws/credentials","aws/credentials/ec2rolecreds","aws/credentials/endpointcreds","aws/credentials/stscreds","aws/defaults","aws/ec2metadata","aws/endpoints","aws/request","aws/session","aws/signer/v4","private/protocol","private/protocol/query","private/protocol/query/queryutil","private/protocol/rest","private/protocol/restxml","private/protocol/xml/xmlutil","service/s3","service/s3/s3iface","service/s3/s3manager","service/sts"]
+  revision = "fed27f4bd16c8c63d01003b978e5bc85fe727519"
+
+[[projects]]
+  name = "github.com/go-ini/ini"
+  packages = ["."]
+  revision = "e7fea39b01aea8d5671f6858f0532f56e8bff3a5"
+  version = "v1.27.0"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/gobwas/glob"
+  packages = [".","compiler","match","syntax","syntax/ast","syntax/lexer","util/runes","util/strings"]
+  revision = "51eb1ee00b6d931c66d229ceeb7c31b985563420"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/google/shlex"
+  packages = ["."]
+  revision = "6f45313302b9c56850fc17f99e40caebce98c716"
+
+[[projects]]
+  name = "github.com/jmespath/go-jmespath"
+  packages = ["."]
+  revision = "3433f3ea46d9f8019119e7dd41274e112a2359a9"
+  version = "0.2.2"

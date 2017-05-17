@@ -1,19 +1,14 @@
 package main
 
-import "os"
-import "log"
-import "path"
 import (
-	"io/ioutil"
+	"log"
+	"os"
+	"path"
 )
 
 func main() {
-	confName := ".s3push.yml"
-	conf, err := ioutil.ReadFile(confName)
-	if err != nil {
-		log.Fatalf("Unable to find conf file: %q", confName)
-	}
-	s3conf, err := ReadConf(string(conf))
+	confName := ".s3push.sh"
+	s3conf, err := ReadConf(confName)
 	if err != nil {
 		log.Fatalf("Unable to read conf: %s", err)
 	}
