@@ -98,8 +98,12 @@ func main() {
 			errcount++
 		}
 	}
-	log.Printf("Total Bytes: %d", upbytes)
-	log.Printf("Total Errors: %d", errcount)
-	log.Printf("Total Time: %s", time.Since(t0))
+	seconds := time.Since(t0).Seconds()
+	mbytes := float64(upbytes) / float64(1024*1024)
+
+	log.Printf("Total Errors : %d", errcount)
+	log.Printf("Total Bytes  : %d", upbytes)
+	log.Printf("Total Time   : %s", time.Since(t0))
+	log.Printf("MB/Sec       : %f", mbytes/seconds)
 
 }
