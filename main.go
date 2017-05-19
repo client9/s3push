@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"path"
+	"time"
 )
 
 // over-ridden via goreleaser
@@ -72,11 +73,12 @@ func main() {
 	log.Printf("Uploads: %d", len(uploads))
 	log.Printf("Downloads: %d", len(downloads))
 
+	t0 := time.Now()
 	jobs := make(chan FileStat, len(uploads))
 	results := make(chan error, len(uploads))
 
 	// unlease some workers
-	for w := 0; w < 1; w++ {
+	for w := 0; w < 8; w++ {
 		go worker(w, s3conf, jobs, results)
 	}
 
@@ -97,4 +99,6 @@ func main() {
 		}
 	}
 	log.Printf("Total Errors: %d", errcount)
+	log.Printf("Total Time: %s", time.Since(t0))
+
 }
