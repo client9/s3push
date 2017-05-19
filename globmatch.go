@@ -37,7 +37,7 @@ func (g *GlobMatch) MarshalText() ([]byte, error) {
 	return []byte(fmt.Sprintf("\"%s: %v %v\"", "GlobMatch", g.normal, g.orig)), nil
 }
 
-// Match satifies the Matcher interface
+// Match satisfies the Matcher interface
 func (g *GlobMatch) Match(file string) bool {
 	for _, gg := range g.matcher {
 		if gg.Match(file) {
