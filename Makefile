@@ -11,6 +11,7 @@ setup: ## Install all the build and lint dependencies
 lint: ## Run all the linters
 	gometalinter --vendor --disable-all \
                 --enable=deadcode \
+		--enable=errcheck \
                 --enable=ineffassign \
                 --enable=gosimple \
                 --enable=staticcheck \
@@ -18,8 +19,6 @@ lint: ## Run all the linters
                 --enable=goimports \
                 --enable=dupl \
                 --enable=misspell \
-                --enable=errcheck \
-                --enable=vet \
                 --enable=vetshadow \
                 --deadline=10m \
                 ./...

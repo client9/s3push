@@ -2,7 +2,7 @@ package httpmime
 
 import (
 	"mime"
-	"strings"
+	"os"
 )
 
 var typeFiles = []string{
@@ -13,7 +13,7 @@ var typeFiles = []string{
 
 func Init() {
 	for k, v := range mimeTypes {
-		_ = mime.AddExtentionType(k, v)
+		_ = mime.AddExtensionType(k, v)
 	}
 }
 

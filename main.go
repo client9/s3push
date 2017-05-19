@@ -45,7 +45,7 @@ func main() {
 		log.Printf("%s: configuring: %s", up.Name, DumpUploadInput(upi))
 		log.Printf("PATH= %s", up.Path)
 		fd, err := os.Open(up.Path)
-		defer fd.Close()
+		defer func() { _ = fd.Close() }()
 
 		if err != nil {
 			log.Printf("Unable to open %s", err)

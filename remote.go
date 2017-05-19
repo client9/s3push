@@ -41,7 +41,8 @@ func loadLocalFiles(basePath string) ([]FileStat, error) {
 	}
 
 	if !stat.IsDir() {
-		sum, err := MD5File(absPath)
+		var sum string
+		sum, err = MD5File(absPath)
 		if err != nil {
 			return nil, err
 		}
