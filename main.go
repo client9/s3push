@@ -27,8 +27,7 @@ func upload(s3conf *S3PushConfig, up FileStat) error {
 	if upi.ContentType == nil && up.Mime != "" {
 		upi.ContentType = &up.Mime
 	}
-	log.Printf("%s: configuring: %s", up.Name, DumpUploadInput(upi))
-	log.Printf("PATH= %s", up.Path)
+	//log.Printf("%s: configuring: %s", up.Name, DumpUploadInput(upi))
 	fd, err := os.Open(up.Path)
 	defer func() { _ = fd.Close() }()
 
@@ -46,11 +45,10 @@ func upload(s3conf *S3PushConfig, up FileStat) error {
 
 func worker(id int, conf *S3PushConfig, jobs <-chan FileStat, results chan<- error) {
 	for up := range jobs {
+	        log.Printf("%d: %s", id, up.Path)
 		err := upload(conf, up)
-		if err == nil {
-			log.Printf("worker: %d: finished", id)
-		} else {
-			log.Printf("worker %d errors: %s", id, err)
+		if err != nil {
+			log.Printf("%d error: %s", id, err)
 		}
 		results <- err
 	}
