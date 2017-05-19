@@ -18,7 +18,7 @@ func upload(s3conf *S3PushConfig, up FileStat) error {
 	}
 	upi, err := NewUploadInput(ma)
 	if err != nil {
-		return fmt.Errorf("Error configuring %q: %s", up.Name, err)
+		return fmt.Errorf("error configuring %q: %s", up.Name, err)
 	}
 	upi.Bucket = &s3conf.Bucket
 	key := path.Join("", up.Name)
@@ -32,13 +32,13 @@ func upload(s3conf *S3PushConfig, up FileStat) error {
 	defer func() { _ = fd.Close() }()
 
 	if err != nil {
-		return fmt.Errorf("Unable to open %s", err)
+		return fmt.Errorf("unable to open %s", err)
 	}
 	upi.Body = fd
 	// TODO: UploaderOutput
 	_, err = s3conf.s3uploader.Upload(upi)
 	if err != nil {
-		return fmt.Errorf("Unable to upload %s: %s", up.Name, err)
+		return fmt.Errorf("unable to upload %s: %s", up.Name, err)
 	}
 	return nil
 }
@@ -46,7 +46,7 @@ func upload(s3conf *S3PushConfig, up FileStat) error {
 func worker(id int, conf *S3PushConfig, jobs <-chan FileStat, results chan<- error) {
 	for up := range jobs {
 		err := upload(conf, up)
-		if err != nil {
+		if err == nil {
 			log.Printf("worker: %d: finished", id)
 		} else {
 			log.Printf("worker %d errors: %s", id, err)
