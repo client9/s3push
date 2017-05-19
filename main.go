@@ -45,7 +45,7 @@ func upload(s3conf *S3PushConfig, up FileStat) error {
 
 func worker(id int, conf *S3PushConfig, jobs <-chan FileStat, results chan<- error) {
 	for up := range jobs {
-	        log.Printf("%d: %s", id, up.Path)
+		log.Printf("%d: %s", id, up.Path)
 		err := upload(conf, up)
 		if err != nil {
 			log.Printf("%d error: %s", id, err)
@@ -81,7 +81,9 @@ func main() {
 	}
 
 	// push into queue
+	upbytes := int64(0)
 	for _, up := range uploads {
+		upbytes += up.Size
 		jobs <- up
 	}
 
@@ -96,6 +98,7 @@ func main() {
 			errcount++
 		}
 	}
+	log.Printf("Total Bytes: %d", upbytes)
 	log.Printf("Total Errors: %d", errcount)
 	log.Printf("Total Time: %s", time.Since(t0))
 
