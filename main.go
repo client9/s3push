@@ -7,6 +7,7 @@ import (
 	"path"
 	"time"
 
+	"github.com/client9/httpmime"
 	"gopkg.in/alecthomas/kingpin.v2"
 )
 
@@ -77,6 +78,13 @@ func main() {
 		s3conf.Region = *region
 	}
 
+	// some systems like Alpine Linux do not natively come with
+	// and /etc/mime.types file and so automatically mapping of
+	// extenion to mime type will often not work.
+	// httpmime fixes this.
+	if httpmime.Init() {
+		log.Printf("Using internal mime-type mappings")
+	}
 
 	if err = s3conf.InitS3(); err != nil {
 		log.Fatalf("Unable to init s3: %s", err)
