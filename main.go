@@ -6,6 +6,8 @@ import (
 	"os"
 	"path"
 	"time"
+
+	"gopkg.in/alecthomas/kingpin.v2"
 )
 
 // over-ridden via goreleaser
@@ -54,12 +56,28 @@ func worker(id int, conf *S3PushConfig, jobs <-chan FileStat, results chan<- err
 	}
 }
 
+var (
+	confName = kingpin.Flag("conf", "Location of configuration file").Short('c').Default(".s3push.sh").OverrideDefaultFromEnvar("S3PUSH_CONF").String()
+	bucket = kingpin.Flag("bucket", "S3 bucket name").Short('b').OverrideDefaultFromEnvar("S3PUSH_BUCKET").String()
+	region = kingpin.Flag("region", "S3 bucket region").Short('r').OverrideDefaultFromEnvar("S3PUSH_REGION").String()
+)
+
 func main() {
-	confName := ".s3push.sh"
-	s3conf, err := ReadConf(confName)
+	kingpin.Version(version)
+	kingpin.Parse()
+
+	s3conf, err := ReadConf(*confName)
 	if err != nil {
 		log.Fatalf("Unable to read conf: %s", err)
 	}
+	if *bucket != "" {
+		s3conf.Bucket = *bucket
+	}
+	if *region != "" {
+		s3conf.Region = *region
+	}
+
+
 	if err = s3conf.InitS3(); err != nil {
 		log.Fatalf("Unable to init s3: %s", err)
 	}

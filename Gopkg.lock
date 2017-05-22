@@ -1,4 +1,16 @@
-memo = "7c8079eeecd343b5265e3fc0faf0e1a0ccd700189abd6b3a3ce2b5f8f0d5f12a"
+memo = "7be192b37c2588f3fac3adcbfc4fedabd4d30bce18cbd05dc26f1d7479983531"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/alecthomas/template"
+  packages = [".","parse"]
+  revision = "a0175ee3bccc567396460bf5acd36800cb10c49c"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/alecthomas/units"
+  packages = ["."]
+  revision = "2efee857e7cfd4f3d0138cc3cbb1b4966962b93a"
 
 [[projects]]
   branch = "master"
@@ -29,3 +41,9 @@ memo = "7c8079eeecd343b5265e3fc0faf0e1a0ccd700189abd6b3a3ce2b5f8f0d5f12a"
   packages = ["."]
   revision = "3433f3ea46d9f8019119e7dd41274e112a2359a9"
   version = "0.2.2"
+
+[[projects]]
+  name = "gopkg.in/alecthomas/kingpin.v2"
+  packages = ["."]
+  revision = "7f0871f2e17818990e4eed73f9b5c2f429501228"
+  version = "v2.2.4"
