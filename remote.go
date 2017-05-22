@@ -187,7 +187,7 @@ func compute(localFiles, remoteFiles []FileStat) ([]FileStat, []FileStat) {
 		}
 		delete(fmap, f.Name)
 		if f.ETag != remoteStat.ETag {
-			log.Printf("ETag diff for %s: %s vs %s", f.Name, f.ETag, remoteStat.ETag)
+			// log.Printf("ETag diff for %s: %s vs %s", f.Name, f.ETag, remoteStat.ETag)
 			uploads = append(uploads, f)
 		}
 	}
