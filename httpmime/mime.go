@@ -15,7 +15,6 @@ var TypeFiles = []string{
 	"/etc/apache/mime.types",
 }
 
-
 // MimeTypeFiles returns a list of default mime files found
 // by golang's native loader.  This is done by inspection
 // and may or may not represent what was actually loaded or
@@ -23,7 +22,7 @@ var TypeFiles = []string{
 //
 func MimeTypeFiles() []string {
 	out := []string{}
-	for _, fname := range typeFiles {
+	for _, fname := range TypeFiles {
 		if _, err := os.Stat(fname); err == nil {
 			out = append(out, fname)
 		}
@@ -48,9 +47,14 @@ func AddDefaults() {
 }
 
 // Init attempts to make sure golang's mime package is initialized
-// correctly on platforms missing basic mime type files
-func Init() {
-	if !IsLoader() {
+// correctly on platforms missing basic mime type files.
+//
+// Returns true if new defaults were added.
+// Returns false if no modification
+func Init() bool {
+	if !IsLoaded() {
 		AddDefaults()
+		return true
 	}
+	return false
 }
