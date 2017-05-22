@@ -4,13 +4,13 @@ memo = "7c8079eeecd343b5265e3fc0faf0e1a0ccd700189abd6b3a3ce2b5f8f0d5f12a"
   branch = "master"
   name = "github.com/aws/aws-sdk-go"
   packages = ["aws","aws/awserr","aws/awsutil","aws/client","aws/client/metadata","aws/corehandlers","aws/credentials","aws/credentials/ec2rolecreds","aws/credentials/endpointcreds","aws/credentials/stscreds","aws/defaults","aws/ec2metadata","aws/endpoints","aws/request","aws/session","aws/signer/v4","private/protocol","private/protocol/query","private/protocol/query/queryutil","private/protocol/rest","private/protocol/restxml","private/protocol/xml/xmlutil","service/s3","service/s3/s3iface","service/s3/s3manager","service/sts"]
-  revision = "fed27f4bd16c8c63d01003b978e5bc85fe727519"
+  revision = "31484500fe77b88dbe197c6348358ed275aed5d7"
 
 [[projects]]
   name = "github.com/go-ini/ini"
   packages = ["."]
-  revision = "e7fea39b01aea8d5671f6858f0532f56e8bff3a5"
-  version = "v1.27.0"
+  revision = "36da989cdc560b989d8f195aec46214d33665d20"
+  version = "v1.27.2"
 
 [[projects]]
   branch = "master"

@@ -45,7 +45,7 @@ func upload(s3conf *S3PushConfig, up FileStat) error {
 
 func worker(id int, conf *S3PushConfig, jobs <-chan FileStat, results chan<- error) {
 	for up := range jobs {
-		log.Printf("%d: %s", id, up.Path)
+		log.Printf("%d: %s", id, up.Name)
 		err := upload(conf, up)
 		if err != nil {
 			log.Printf("%d error: %s", id, err)
