@@ -1,4 +1,4 @@
-memo = "7be192b37c2588f3fac3adcbfc4fedabd4d30bce18cbd05dc26f1d7479983531"
+memo = "0c19b34863cd794c7294b90147c64838a9c54c3ad7301ef11395e8dfd1a298d4"
 
 [[projects]]
   branch = "master"
@@ -17,6 +17,12 @@ memo = "7be192b37c2588f3fac3adcbfc4fedabd4d30bce18cbd05dc26f1d7479983531"
   name = "github.com/aws/aws-sdk-go"
   packages = ["aws","aws/awserr","aws/awsutil","aws/client","aws/client/metadata","aws/corehandlers","aws/credentials","aws/credentials/ec2rolecreds","aws/credentials/endpointcreds","aws/credentials/stscreds","aws/defaults","aws/ec2metadata","aws/endpoints","aws/request","aws/session","aws/signer/v4","private/protocol","private/protocol/query","private/protocol/query/queryutil","private/protocol/rest","private/protocol/restxml","private/protocol/xml/xmlutil","service/s3","service/s3/s3iface","service/s3/s3manager","service/sts"]
   revision = "31484500fe77b88dbe197c6348358ed275aed5d7"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/client9/httpmime"
+  packages = ["."]
+  revision = "720f4fe360e43873fee500b59de96a22e0b9b0fc"
 
 [[projects]]
   name = "github.com/go-ini/ini"
