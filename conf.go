@@ -50,6 +50,7 @@ type S3PushConfig struct {
 
 	Base   string
 	Bucket string
+	Prefix string
 	Region string
 
 	Upload []*Filter

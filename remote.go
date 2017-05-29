@@ -134,7 +134,7 @@ func listS3Files(svc *s3.S3, bucket, bucketPrefix string) ([]FileStat, error) {
 
 func files(conf *S3PushConfig) ([]FileStat, []FileStat, error) {
 
-	bucketPrefix := ""
+	bucketPrefix := conf.Prefix 
 	base := conf.Base
 
 	var remoteFiles []FileStat

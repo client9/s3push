@@ -59,8 +59,9 @@ func worker(id int, conf *S3PushConfig, jobs <-chan FileStat, results chan<- err
 
 var (
 	confName = kingpin.Flag("conf", "Location of configuration file").Short('c').Default(".s3push.sh").OverrideDefaultFromEnvar("S3PUSH_CONF").String()
-	bucket = kingpin.Flag("bucket", "S3 bucket name").Short('b').OverrideDefaultFromEnvar("S3PUSH_BUCKET").String()
-	region = kingpin.Flag("region", "S3 bucket region").Short('r').OverrideDefaultFromEnvar("S3PUSH_REGION").String()
+	bucket   = kingpin.Flag("bucket", "S3 bucket name").Short('b').OverrideDefaultFromEnvar("S3PUSH_BUCKET").String()
+	prefix   = kingpin.Flag("prefix", "S3 bucket prefix").Short('p').OverrideDefaultFromEnvar("S3PUSH_PREFIX").String()
+	region   = kingpin.Flag("region", "S3 bucket region").Short('r').OverrideDefaultFromEnvar("S3PUSH_REGION").String()
 )
 
 func main() {
@@ -70,6 +71,9 @@ func main() {
 	s3conf, err := ReadConf(*confName)
 	if err != nil {
 		log.Fatalf("Unable to read conf: %s", err)
+	}
+	if *prefix != "" {
+		s3conf.Prefix = *prefix
 	}
 	if *bucket != "" {
 		s3conf.Bucket = *bucket
