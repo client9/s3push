@@ -1,6 +1,9 @@
 
 build:
-	go build .
+	go build .   ## build
+
+install:
+	go install .  ## install into GOPATH/bin
 
 setup: ## Install all the build and lint dependencies
 	go get -u github.com/alecthomas/gometalinter
@@ -33,6 +36,11 @@ fmt:
 clean:
 	go clean ./...
 	git gc --aggressive
+
+# Absolutely awesome: http://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
+help:
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+
 
 .PHONY: ci fmt clean build run lint setup
 
