@@ -95,6 +95,8 @@ func (c *S3PushConfig) ConfCall(args []string) error {
 		return RequireString1(args, c.setBase)
 	case "bucket":
 		return RequireString1(args, c.setBucket)
+	case "prefix":
+		return RequireString1(args, c.setPrefix)
 	case "region":
 		return RequireString1(args, c.setRegion)
 	}
@@ -115,11 +117,15 @@ func (c *S3PushConfig) setBase(arg string) error {
 	c.Base = arg
 	return nil
 }
+
 func (c *S3PushConfig) setBucket(arg string) error {
 	c.Bucket = arg
 	return nil
 }
-
+func (c *S3PushConfig) setPrefix(arg string) error {
+	c.Prefix = arg
+	return nil
+}
 func (c *S3PushConfig) setRegion(arg string) error {
 	c.Region = arg
 	return nil

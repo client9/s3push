@@ -25,7 +25,7 @@ func upload(s3conf *S3PushConfig, up FileStat) error {
 		return fmt.Errorf("error configuring %q: %s", up.Name, err)
 	}
 	upi.Bucket = &s3conf.Bucket
-	key := path.Join("", up.Name)
+	key := path.Join(s3conf.Prefix, up.Name)
 	upi.Key = &key
 	if upi.ContentType == nil && up.Mime != "" {
 		upi.ContentType = &up.Mime
